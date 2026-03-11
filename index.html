@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)file:///Users/bhavikdaya/Downloads/psych-scales_11.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Scalar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./index_files/css2" rel="stylesheet">
+<style>
+  /* Immediate font fallbacks — render before Google Fonts loads */
+  :root {
+    --font-serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+    --font-mono: 'DM Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  }
+</style>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #22223a;
+    --accent: #aaed5a;       /* cooler, more distinctly green */
+    --accent-glow: rgba(170, 237, 90, 0.18);
+    --accent2: #5ec9f5;      /* slightly desaturated cyan */
+    --accent3: #f55ec4;      /* unchanged pink */
+    --text: #f0f0f8;         /* brighter for daytime legibility */
+    --muted: #606072;        /* neutral, less purple */
+    --card: #1a1a28;         /* higher contrast vs bg */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    position: fixed;
+    top: 0; left: 0;
+  }
+
+  body {
+    font-family: var(--font-mono);
+    color: var(--text);
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ─── ROOT WRAPPER ─── */
+  #app {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  /* ─── LANDING ─── */
+  #landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+    gap: 0;
+  }
+
+  .landing-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  /* Drum roll wheel */
+  .wheel-wrapper {
+    position: relative;
+    width: 320px;
+    height: 220px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s ease forwards;
+  }
+
+  /* Gradient overlays to create fade effect */
+  .wheel-wrapper::before,
+  .wheel-wrapper::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 70px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .wheel-wrapper::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
+  }
+  .wheel-wrapper::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
+  }
+
+  /* Selection highlight */
+  .wheel-selection {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 56px;
+    border-top: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent);
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .wheel-track {
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+    position: relative;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .wheel-inner {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  .wheel-item {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-shrink: 0;
+    user-select: none;
+    transition: all 0.15s ease;
+  }
+
+  .wheel-item-abbr {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    color: var(--muted);
+    transition: all 0.15s ease;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .wheel-item-name {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    min-width: 120px;
+    text-align: left;
+    transition: all 0.15s ease;
+  }
+
+  .wheel-item.active .wheel-item-abbr {
+    color: var(--accent);
+    font-size: 1.6rem;
+  }
+
+  .wheel-item.active .wheel-item-name {
+    color: var(--text);
+  }
+
+  .start-btn {
+    margin-top: 32px;
+    padding: 14px 52px;
+    background: var(--accent);
+    color: #07100a;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.35s ease forwards;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px var(--accent-glow);
+  }
+
+  .start-btn:active { transform: translateY(0); }
+
+  /* ─── SCALE VIEW ─── */
+  #scale-view {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    inset: 0;
+    align-items: center;
+  }
+
+  /* Max-width wrapper for desktop */
+  .scale-inner {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Header */
+  .scale-header {
+    padding: 16px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    background: var(--bg);
+    width: 100%;
+  }
+
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .header-centre {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .scale-name-header {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: color 0.15s ease;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+  }
+
+  .scale-name-header:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .info-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .info-btn:hover { color: var(--accent2); }
+
+  .score-display {
+    text-align: right;
+  }
+
+  .score-num {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .score-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    flex-shrink: 0;
+    width: 100%;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Question area */
+  .question-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .question-card {
+    position: absolute;
+    inset: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-top: 8px;
+    overflow-y: auto;
+  }
+
+  /* ─── CONFIRM FLASH ─── */
+  @keyframes confirmFlash {
+    0%   { background: rgba(170,237,90,0.32); border-color: var(--accent); }
+    100% { background: var(--card); border-color: var(--border); }
+  }
+
+  .option-btn.confirmed {
+    animation: confirmFlash 0.4s ease forwards;
+    pointer-events: none;
+  }
+
+  /* ─── INFO MODAL ─── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    max-width: 480px;
+    width: 100%;
+    padding: 32px;
+    position: relative;
+    animation: fadeUp 0.25s ease forwards;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.15s;
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  .modal-title {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .modal-subtitle {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .modal-section {
+    margin-bottom: 16px;
+  }
+
+  .modal-label {
+    font-size: 0.6rem;
+    color: var(--accent2);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .modal-value {
+    font-size: 0.72rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .modal-value a {
+    color: var(--accent2);
+    text-decoration: none;
+  }
+
+  /* ─── SUMMARY VIEW ─── */
+  .summary-toggle {
+    font-size: 0.63rem;
+    color: var(--muted);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+    transition: color 0.15s;
+  }
+
+  .summary-toggle:hover { color: var(--text); }
+
+  .summary-grid {
+    display: none;
+    margin-top: 12px;
+    width: 100%;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  .summary-grid.open { display: block; }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.65rem;
+  }
+
+  .summary-row:last-child { border-bottom: none; }
+
+  .summary-item-name {
+    color: var(--muted);
+    flex: 1;
+    padding-right: 12px;
+    line-height: 1.3;
+  }
+
+  .summary-item-score {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    min-width: 20px;
+    text-align: right;
+  }
+
+  .summary-item-score.zero { color: var(--muted); }
+
+  .q-number {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .q-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 4vw, 1.6rem);
+    line-height: 1.25;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .q-description {
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s ease;
+    line-height: 1.4;
+  }
+
+  .option-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    transform: translateX(4px);
+  }
+
+  .option-btn:active {
+    background: rgba(170, 237, 90, 0.22);
+    transform: translateX(4px);
+    border-color: var(--accent);
+  }
+
+  .back-btn:disabled {
+    opacity: 0.25;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .option-score {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--accent);
+    min-width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* Card animations */
+  @keyframes slideInRight {
+    from { transform: translateX(60px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slideInLeft {
+    from { transform: translateX(-60px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-60px); opacity: 0; }
+  }
+
+  @keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(60px); opacity: 0; }
+  }
+
+  .slide-in-right { animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+  .slide-in-left { animation: slideInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+  .slide-out-left { animation: slideOutLeft 0.25s ease forwards; }
+  .slide-out-right { animation: slideOutRight 0.25s ease forwards; }
+
+  /* Results card scrollable on small screens */
+  .results-card {
+    position: absolute;
+    inset: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    overflow-y: auto;
+    padding-top: 32px;
+  }
+
+  .result-scale {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .result-score-big {
+    font-family: var(--font-serif);
+    font-size: clamp(4.5rem, 20vw, 7rem);
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .result-max {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .result-interp {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .result-note {
+    font-size: 0.66rem;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 260px;
+    margin-bottom: 28px;
+  }
+
+  /* ─── RESULT BUTTONS ─── */
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .copy-btn {
+    width: 100%;
+    padding: 13px 24px;
+    background: var(--accent);
+    border: none;
+    color: #07100a;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .copy-btn:hover {
+    box-shadow: 0 6px 20px var(--accent-glow);
+    transform: translateY(-1px);
+  }
+
+  .again-btn {
+    width: 100%;
+    padding: 12px 24px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .again-btn:hover { background: var(--accent-glow); }
+
+  .redo-btn {
+    width: 100%;
+    padding: 11px 24px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .redo-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  .print-btn {
+    width: 100%;
+    padding: 11px 24px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .print-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  /* ─── PRINT ─── */
+  @media print {
+    body, html { background: #fff !important; color: #000 !important; }
+    #app { position: static !important; overflow: visible !important; }
+    #landing, #scale-view .scale-header, #scale-view .progress-bar,
+    .result-actions, .summary-section > button, #historyModal,
+    #infoModal, .toast, .back-btn, .info-btn { display: none !important; }
+    #scale-view { display: block !important; position: static !important; }
+    .scale-inner { max-width: 100% !important; }
+    .question-area { overflow: visible !important; position: static !important; height: auto !important; }
+    .results-card {
+      position: static !important;
+      overflow: visible !important;
+      padding: 24px !important;
+      color: #000 !important;
+      text-align: left !important;
+    }
+    .result-scale { color: #666 !important; }
+    .result-score-big { color: #000 !important; font-size: 3rem !important; }
+    .result-max, .result-note { color: #444 !important; }
+    .result-interp { color: #000 !important; }
+    .safety-flag { border-color: #c00 !important; color: #c00 !important; background: #fff !important; }
+    .summary-section { border-top: 1px solid #ccc !important; margin-top: 16px !important; }
+    .summary-grid { display: block !important; border: 1px solid #ccc !important; }
+    .summary-row { border-bottom: 1px solid #eee !important; }
+    .summary-item-name { color: #444 !important; }
+    .summary-item-score { color: #000 !important; }
+    .summary-item-score.zero { color: #aaa !important; }
+  }
+
+  /* Separator before summary toggle */
+  .summary-section {
+    width: 100%;
+    max-width: 320px;
+    margin-top: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .safety-flag {
+    display: inline-block;
+    background: rgba(245, 96, 96, 0.15);
+    border: 1px solid rgba(245, 96, 96, 0.4);
+    color: #f59060;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 6px 12px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  /* Re-trigger landing animations on return — utility */
+  .anim-reset { animation: none !important; opacity: 1 !important; }
+
+  @keyframes fadeUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* Scrollbar hide */
+  ::-webkit-scrollbar { display: none; }
+
+  .toast {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent);
+    color: #0a0a0f;
+    padding: 10px 24px;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .nav-hint {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-top: 16px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.45s ease forwards;
+  }
+
+  .history-btn {
+    margin-top: 20px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.15s;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.5s ease forwards;
+  }
+
+  .history-btn:hover { color: var(--text); }
+
+  .history-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .history-entry:last-child { border-bottom: none; }
+
+  .history-scale {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .history-meta {
+    flex: 1;
+  }
+
+  .history-interp {
+    font-size: 0.7rem;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .history-time {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .history-copy {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    padding: 4px 8px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .history-copy:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- LANDING -->
+<div id="landing" style="display: flex;">
+  <div class="landing-title" style="opacity: 0;">Scalar</div>
+
+  <div class="wheel-wrapper" style="opacity: 0;">
+    <div class="wheel-selection"></div>
+    <div class="wheel-track" id="wheelTrack">
+      <div class="wheel-inner" id="wheelInner" style="transition: none; transform: translateY(-30px);"><div class="wheel-item"></div><div class="wheel-item"></div><div class="wheel-item active" data-key="BFCRS"><span class="wheel-item-abbr">BFCRS</span><span class="wheel-item-name">Bush-Francis Catatonia</span></div><div class="wheel-item" data-key="YMRS"><span class="wheel-item-abbr">YMRS</span><span class="wheel-item-name">Young Mania Rating</span></div><div class="wheel-item" data-key="PHQ9"><span class="wheel-item-abbr">PHQ-9</span><span class="wheel-item-name">PHQ-9 Depression</span></div><div class="wheel-item" data-key="HAMD"><span class="wheel-item-abbr">HAMD-17</span><span class="wheel-item-name">Hamilton Depression</span></div><div class="wheel-item" data-key="CAGE"><span class="wheel-item-abbr">CAGE</span><span class="wheel-item-name">CAGE Alcohol</span></div><div class="wheel-item" data-key="AUDIT"><span class="wheel-item-abbr">AUDIT</span><span class="wheel-item-name">AUDIT Alcohol Use</span></div><div class="wheel-item" data-key="CSSRS"><span class="wheel-item-abbr">C-SSRS</span><span class="wheel-item-name">Columbia Suicide Severity</span></div><div class="wheel-item" data-key="CGI"><span class="wheel-item-abbr">CGI</span><span class="wheel-item-name">Clinical Global Impression</span></div><div class="wheel-item" data-key="YBOCS"><span class="wheel-item-abbr">Y-BOCS</span><span class="wheel-item-name">Yale-Brown OCD</span></div><div class="wheel-item" data-key="CIWA"><span class="wheel-item-abbr">CIWA-Ar</span><span class="wheel-item-name">CIWA-Ar Alcohol W/D</span></div><div class="wheel-item" data-key="MADRS"><span class="wheel-item-abbr">MADRS</span><span class="wheel-item-name">MADRS Depression</span></div><div class="wheel-item" data-key="BARNES"><span class="wheel-item-abbr">BARS</span><span class="wheel-item-name">Barnes Akathisia</span></div><div class="wheel-item"></div><div class="wheel-item"></div></div>
+    </div>
+  </div>
+
+  <button class="start-btn" onclick="startScale()" style="opacity: 0;">Begin →</button>
+  <div class="nav-hint" style="opacity: 0;">drag to select</div>
+  <button class="history-btn" id="historyBtn" onclick="openHistory()" style="display: block;">▸ Session history</button>
+</div>
+
+<!-- SCALE VIEW -->
+<div id="scale-view" style="display: none;">
+  <div class="scale-inner">
+    <div class="scale-header">
+      <button class="back-btn" id="backBtn" onclick="handleBack()">← back</button>
+      <div class="header-centre">
+        <div class="scale-name-header" id="scaleNameHeader" onclick="goHome()" title="Return to scale selector">BFCRS</div>
+        <button class="info-btn" id="infoBtn" onclick="openInfo()" title="Scale information">ⓘ</button>
+      </div>
+      <div class="score-display">
+        <div class="score-num" id="runningScore">1</div>
+        <div class="score-label">score</div>
+      </div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 56.5217%;"></div>
+    </div>
+    <div class="question-area" id="questionArea"></div>
+  </div>
+</div>
+
+<!-- INFO MODAL -->
+<div class="modal-backdrop" id="infoModal" style="display:none" onclick="closeInfo(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeInfoDirect()">✕</button>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-subtitle" id="modalSubtitle"></div>
+    <div class="modal-section">
+      <div class="modal-label">Items</div>
+      <div class="modal-value" id="modalItems"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Score range</div>
+      <div class="modal-value" id="modalRange"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">Reference</div>
+      <div class="modal-value" id="modalRef"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-backdrop" id="historyModal" style="display:none" onclick="closeHistory(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeHistoryDirect()">✕</button>
+    <div class="modal-title">Session History</div>
+    <div class="modal-subtitle" style="margin-bottom:16px;">This session only — clears on reload</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div><!-- #app -->
+
+<script>
+// ─── SCALE DATA ───
+const SCALES = {
+  BFCRS: {
+    name: 'Bush-Francis Catatonia Rating Scale',
+    wheelName: 'Bush-Francis Catatonia',
+    abbr: 'BFCRS',
+    color: '#c8f560',
+    max: 59,
+    info: {
+      items: '23 items across motor, behavioural, and autonomic domains',
+      range: '0–59 (items 13, 17–20 are binary 0–1; remainder 0–3)',
+      interpretation: '0 = no catatonia; ≥2 on items 1–14 = catatonia present',
+      ref: 'Bush G, et al. (1996). Catatonia I: Rating scale and standardized examination. Acta Psychiatrica Scandinavica, 93(2), 129–135.'
+    },
+    items: [
+      { label: 'Excitement', desc: 'Extreme hyperactivity, constant motor unrest which appears non-purposeful. Not to be confused with psychotic excitement.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Occasional periods of motor unrest'},{s:2,t:'Moderate: Motor unrest more than half the time'},{s:3,t:'Severe: Constant motor unrest'} ]},
+      { label: 'Immobility / Stupor', desc: 'Extreme hypoactivity, immobile, minimally responsive to stimuli.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Sits abnormally still, may interact briefly'},{s:2,t:'Moderate: Stiff, immobile, ignores most stimuli'},{s:3,t:'Severe: Rigid, no response to painful stimuli'} ]},
+      { label: 'Mutism', desc: 'Verbally unresponsive or minimally responsive.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Provides minimal responses'},{s:2,t:'Moderate: Speaks <20 words spontaneously'},{s:3,t:'Severe: No speech'} ]},
+      { label: 'Staring', desc: 'Fixed gaze, little or no visual scanning of environment, decreased blinking.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Poor eye contact, repeatedly gazes <20 sec'},{s:2,t:'Moderate: Gazes for <1 minute'},{s:3,t:'Severe: Fixes gaze for >1 minute'} ]},
+      { label: 'Posturing / Catalepsy', desc: 'Spontaneous maintenance of posture(s), including mundane (lying, sitting).', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Unusual posture <1 min'},{s:2,t:'Moderate: Unusual posture for 1–15 min'},{s:3,t:'Severe: Unusual posture for >15 min'} ]},
+      { label: 'Grimacing', desc: 'Maintenance of odd facial expressions.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: <10 sec'},{s:2,t:'Moderate: 10 sec – 1 min'},{s:3,t:'Severe: >1 min'} ]},
+      { label: 'Echopraxia / Echolalia', desc: 'Mimicking of examiner\'s movements or speech.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Occasional'},{s:2,t:'Moderate: Frequent'},{s:3,t:'Severe: Constant'} ]},
+      { label: 'Stereotypy', desc: 'Repetitive non-goal-directed motor activity (e.g., rocking, rubbing).', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Occasional'},{s:2,t:'Moderate: Frequent'},{s:3,t:'Severe: Constant'} ]},
+      { label: 'Mannerisms', desc: 'Odd, purposeful movements (e.g., walking tips of toes, saluting).', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Occasional'},{s:2,t:'Moderate: Frequent'},{s:3,t:'Severe: Constant'} ]},
+      { label: 'Verbigeration', desc: 'Repetition of phrases or sentences (like a broken record).', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Occasional'},{s:2,t:'Moderate: Frequent'},{s:3,t:'Severe: Constant'} ]},
+      { label: 'Rigidity', desc: 'Maintenance of a rigid position despite efforts to be moved, exclude if due to EPS.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Slight resistance'},{s:2,t:'Moderate: Clear resistance'},{s:3,t:'Severe: Immovable'} ]},
+      { label: 'Negativism', desc: 'Apparently motiveless resistance or opposite to instructions or movement attempts.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Occasionally'},{s:2,t:'Moderate: Frequently'},{s:3,t:'Severe: Constantly'} ]},
+      { label: 'Waxy Flexibility', desc: 'During reposturing of patient, patient feels like a bending a warm candle.', options: [{s:0,t:'Absent'},{s:1,t:'Present'} ]},
+      { label: 'Withdrawal', desc: 'Refusal to eat, drink, or make eye contact.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Minimal PO, indirect eye contact'},{s:2,t:'Moderate: Tube feeds, averts gaze'},{s:3,t:'Severe: No PO for ≥1 day, no contact'} ]},
+      { label: 'Impulsivity', desc: 'Patient suddenly engages in behaviour without provocation (e.g., hits, runs).', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Once'},{s:2,t:'Moderate: Twice'},{s:3,t:'Severe: ≥3 times'} ]},
+      { label: 'Automatic Obedience', desc: 'Exaggerated cooperation with examiner\'s request, or automatic following of instructions.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Occasional'},{s:2,t:'Moderate: Frequent'},{s:3,t:'Severe: Constant'} ]},
+      { label: 'Mitgehen', desc: 'Moving arm with very light pressure despite instructions to keep arm still (similar to Gegenhalten but less severe).', options: [{s:0,t:'Absent'},{s:1,t:'Present'} ]},
+      { label: 'Gegenhalten', desc: 'Resistance to passive movement, proportional to strength of stimulus, despite instructions to relax.', options: [{s:0,t:'Absent'},{s:1,t:'Present'} ]},
+      { label: 'Ambitendency', desc: 'Patient appears stuck in indecisive, motor act — starting and stopping.', options: [{s:0,t:'Absent'},{s:1,t:'Present'} ]},
+      { label: 'Grasp Reflex', desc: 'Automatic grasping of hand or object when placed in patient\'s palm.', options: [{s:0,t:'Absent'},{s:1,t:'Present'} ]},
+      { label: 'Perseveration', desc: 'Repeatedly returns to same topic or persists in making movements.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: 2–3 times'},{s:2,t:'Moderate: 4–5 times'},{s:3,t:'Severe: >5 times'} ]},
+      { label: 'Combativeness', desc: 'Combative without explanation; may be related to psychosis, delirium, or confusion.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: Once'},{s:2,t:'Moderate: Twice'},{s:3,t:'Severe: ≥3 times'} ]},
+      { label: 'Autonomic Abnormality', desc: 'Temperature >38.0°C, BP systolic >150 or <80, pulse >100 or <50, diaphoresis, tachypnea.', options: [{s:0,t:'Absent'},{s:1,t:'Mild: 1 abnormality'},{s:2,t:'Moderate: 2 abnormalities'},{s:3,t:'Severe: ≥3 abnormalities'} ]},
+    ],
+    interpret: (s) => {
+      if (s === 0) return { label: 'No catatonia', note: 'Score of 0' };
+      if (s <= 2) return { label: 'Possible catatonia', note: 'Items 1–14 only' };
+      if (s <= 17) return { label: 'Catatonia present', note: '≥2 on items 1–14 suggests catatonia' };
+      return { label: 'Severe catatonia', note: 'Consider malignant catatonia / NMS' };
+    },
+    copyText: (s, max) => `BFCRS: ${s}/${max}`
+  },
+
+  YMRS: {
+    name: 'Young Mania Rating Scale',
+    wheelName: 'Young Mania Rating',
+    abbr: 'YMRS',
+    color: '#f560c8',
+    max: 60,
+    info: {
+      items: '11 items; items 5–9 scored 0/2/4/6/8 (double-weighted)',
+      range: '0–60',
+      interpretation: '≤12 remission; 13–19 mild; 20–25 moderate; ≥26 severe',
+      ref: 'Young RC, et al. (1978). A rating scale for mania: Reliability, validity and sensitivity. British Journal of Psychiatry, 133, 429–435.'
+    },
+    items: [
+      { label: 'Elevated Mood', desc: 'Rate the highest level sustained during interview.', options: [{s:0,t:'Absent'},{s:1,t:'Mildly or possibly increased on questioning'},{s:2,t:'Definite subjective elevation; optimistic, self-confident'},{s:3,t:'Elevated; inappropriate to content; humorous'},{s:4,t:'Euphoric; inappropriate laughter; singing'} ]},
+      { label: 'Increased Motor Activity–Energy', desc: 'Observe throughout interview.', options: [{s:0,t:'Absent'},{s:1,t:'Subjectively increased'},{s:2,t:'Animated; gestures increased'},{s:3,t:'Excessive energy; hyperactive; restless'},{s:4,t:'Motor excitement; continuous hyperactivity'} ]},
+      { label: 'Sexual Interest', desc: 'Past week; rate elevated interest or behaviour.', options: [{s:0,t:'Normal; not increased'},{s:1,t:'Mildly or possibly increased'},{s:2,t:'Definite subjective increase'},{s:3,t:'Spontaneous sexual content; elaborate sexual thoughts'},{s:4,t:'Overt sexual acts or statements'} ]},
+      { label: 'Sleep', desc: 'Average hours for past 3 nights.', options: [{s:0,t:'Reports no decrease in sleep'},{s:1,t:'Sleeping less than normal by ≤1 hr'},{s:2,t:'Sleeping 1–2 hrs less than normal'},{s:3,t:'Sleeping 2–3 hrs less than normal'},{s:4,t:'Sleeping <3 hrs'} ]},
+      { label: 'Irritability', desc: 'Rate irritability expressed during interview.', options: [{s:0,t:'Absent'},{s:2,t:'Subjectively increased'},{s:4,t:'Irritable at times during interview; recent episodes of anger'},{s:6,t:'Frequently irritable during interview; short and curt'},{s:8,t:'Hostile, uncooperative; interview impossible'} ]},
+      { label: 'Speech (Rate and Amount)', desc: 'Rate during interview.', options: [{s:0,t:'No increase'},{s:2,t:'Feels talkative'},{s:4,t:'Increased rate or amount at times; verbose'},{s:6,t:'Push; consistently increased rate and amount; difficult to interrupt'},{s:8,t:'Pressured; uninterruptible; continuous speech'} ]},
+      { label: 'Language–Thought Disorder', desc: 'Rate worst during interview.', options: [{s:0,t:'Absent'},{s:1,t:'Circumstantial; mild distractibility; quick thoughts'},{s:2,t:'Distractible; loses goal of thought; changes topics'},{s:3,t:'Flight of ideas; tangential; difficult to follow'},{s:4,t:'Incoherent; communication impossible'} ]},
+      { label: 'Content', desc: 'Rate predominant thought content.', options: [{s:0,t:'Normal'},{s:2,t:'Questionable plans, new interests'},{s:4,t:'Special project; hyperreligious'},{s:6,t:'Grandiose or paranoid ideas; ideas of reference'},{s:8,t:'Delusions; hallucinations'} ]},
+      { label: 'Disruptive–Aggressive Behaviour', desc: 'Rate worst behaviour during interview.', options: [{s:0,t:'Absent; cooperative'},{s:2,t:'Sarcastic; loud at times; guarded'},{s:4,t:'Demanding; threats; shouting'},{s:6,t:'Threatening; screaming; interview difficult'},{s:8,t:'Assaultive; destructive; interview impossible'} ]},
+      { label: 'Appearance', desc: 'Rate grooming/dress observed during interview.', options: [{s:0,t:'Appropriate dress and grooming'},{s:1,t:'Minimally unkempt'},{s:2,t:'Poorly groomed; moderately dishevelled; overdressed'},{s:3,t:'Dishevelled; partly clothed; garish make-up'},{s:4,t:'Completely unkempt; decorated; bizarre garb'} ]},
+      { label: 'Insight', desc: 'Rate patient\'s awareness of their condition.', options: [{s:0,t:'Present; admits illness; agrees with need for treatment'},{s:1,t:'Possibly ill'},{s:2,t:'Admits behaviour change but denies illness'},{s:3,t:'Admits possible change but denies illness'},{s:4,t:'Denies any behaviour change'} ]},
+    ],
+    interpret: (s) => {
+      if (s <= 12) return { label: 'No/Minimal mania', note: 'Score ≤12' };
+      if (s <= 19) return { label: 'Mild mania', note: 'Score 13–19' };
+      if (s <= 25) return { label: 'Moderate mania', note: 'Score 20–25' };
+      return { label: 'Severe mania', note: 'Score ≥26' };
+    },
+    copyText: (s, max) => `YMRS: ${s}/${max}`
+  },
+
+  PHQ9: {
+    name: 'PHQ-9 Depression Scale',
+    wheelName: 'PHQ-9 Depression',
+    abbr: 'PHQ-9',
+    color: '#60c8f5',
+    max: 27,
+    info: {
+      items: '9 items based on DSM depression criteria; patient self-report or clinician administered',
+      range: '0–27',
+      interpretation: '0–4 minimal; 5–9 mild; 10–14 moderate; 15–19 moderately severe; 20–27 severe',
+      ref: 'Kroenke K, Spitzer RL, Williams JBW. (2001). The PHQ-9: Validity of a brief depression severity measure. Journal of General Internal Medicine, 16(9), 606–613.'
+    },
+    items: [
+      { label: 'Little interest or pleasure in doing things', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Feeling down, depressed, or hopeless', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Trouble falling or staying asleep, or sleeping too much', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Feeling tired or having little energy', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Poor appetite or overeating', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Feeling bad about yourself — or that you are a failure or have let yourself or your family down', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Trouble concentrating on things, such as reading the newspaper or watching television', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Moving or speaking so slowly that other people could have noticed — or the opposite', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+      { label: 'Thoughts that you would be better off dead, or of hurting yourself in some way', desc: 'Over the last 2 weeks, how often have you been bothered by…', options: [{s:0,t:'Not at all'},{s:1,t:'Several days'},{s:2,t:'More than half the days'},{s:3,t:'Nearly every day'} ]},
+    ],
+    interpret: (s) => {
+      if (s <= 4) return { label: 'Minimal depression', note: 'Score 0–4' };
+      if (s <= 9) return { label: 'Mild depression', note: 'Score 5–9' };
+      if (s <= 14) return { label: 'Moderate depression', note: 'Score 10–14' };
+      if (s <= 19) return { label: 'Moderately severe', note: 'Score 15–19' };
+      return { label: 'Severe depression', note: 'Score 20–27' };
+    },
+    copyText: (s, max) => `PHQ-9: ${s}/${max}`
+  },
+
+  HAMD: {
+    name: 'Hamilton Depression Rating Scale',
+    wheelName: 'Hamilton Depression',
+    abbr: 'HAMD-17',
+    max: 52,
+    info: {
+      items: '17 items; items 1, 2, 7, 8, 10, 13 scored 0–4; remainder 0–2',
+      range: '0–52',
+      interpretation: '0–7 normal; 8–13 mild; 14–18 moderate; 19–22 severe; ≥23 very severe',
+      ref: 'Hamilton M. (1960). A rating scale for depression. Journal of Neurology, Neurosurgery & Psychiatry, 23(1), 56–62.'
+    },
+    items: [
+      { label: 'Depressed Mood', desc: 'Gloomy attitude, pessimism about the future, feeling of sadness, tendency to weep.', options: [{s:0,t:'Absent'},{s:1,t:'Sadness, etc. only on questioning'},{s:2,t:'Spontaneous communication of sadness'},{s:3,t:'Non-verbal cues: facial expression, posture'},{s:4,t:'Patient reports only these feeling states in communication'} ]},
+      { label: 'Guilt', desc: 'Self-reproach, conviction of having brought harm to others.', options: [{s:0,t:'Absent'},{s:1,t:'Self-reproach, feels they have let people down'},{s:2,t:'Ideas of guilt or rumination over past errors'},{s:3,t:'Present illness is a punishment; delusions of guilt'},{s:4,t:'Hallucinations of accusatory or denunciatory voices'} ]},
+      { label: 'Suicide', desc: 'Conviction that life is not worth living, thoughts of death.', options: [{s:0,t:'Absent'},{s:1,t:'Feels life is not worth living'},{s:2,t:'Wishes were dead; thoughts of possible death'},{s:3,t:'Suicidal ideas or gestures'},{s:4,t:'Attempts at suicide'} ]},
+      { label: 'Insomnia (Early)', desc: 'Difficulty falling asleep.', options: [{s:0,t:'No difficulty'},{s:1,t:'Occasional difficulty — >30 min'},{s:2,t:'Nightly difficulty'} ]},
+      { label: 'Insomnia (Middle)', desc: 'Restlessness or disturbance during the night.', options: [{s:0,t:'No difficulty'},{s:1,t:'Patient restless and disturbed during the night'},{s:2,t:'Waking during the night'} ]},
+      { label: 'Insomnia (Late)', desc: 'Waking in early hours of morning and unable to return to sleep.', options: [{s:0,t:'No difficulty'},{s:1,t:'Waking in early hours but returns to sleep'},{s:2,t:'Unable to fall asleep again if wakes'} ]},
+      { label: 'Work and Activities', desc: 'Activities of daily life — work, hobbies, socialising.', options: [{s:0,t:'No difficulty'},{s:1,t:'Thoughts and feelings of incapacity'},{s:2,t:'Loss of interest in activities or hobbies'},{s:3,t:'Decrease in actual time spent in activities'},{s:4,t:'Stopped working due to illness'} ]},
+      { label: 'Psychomotor Retardation', desc: 'Slowness of thought and speech, impaired concentration, motor activity.', options: [{s:0,t:'Normal speech and thought'},{s:1,t:'Slight retardation at interview'},{s:2,t:'Obvious retardation at interview'},{s:3,t:'Interview very difficult'},{s:4,t:'Complete stupor'} ]},
+      { label: 'Agitation', desc: 'Restlessness associated with anxiety — fidgeting, pacing.', options: [{s:0,t:'None'},{s:1,t:'Fidgetiness'},{s:2,t:'Playing with hands, hair, etc.'},{s:3,t:'Moving about, can\'t sit still'},{s:4,t:'Hand wringing, nail biting, pulling hair'} ]},
+      { label: 'Anxiety (Psychic)', desc: 'Subjective tension, irritability, worrying about minor matters.', options: [{s:0,t:'No difficulty'},{s:1,t:'Subjective tension and irritability'},{s:2,t:'Worrying about minor matters'},{s:3,t:'Apprehensive attitude apparent in face or speech'},{s:4,t:'Fears expressed without questioning'} ]},
+      { label: 'Anxiety (Somatic)', desc: 'Gastrointestinal: dry mouth, flatulence, indigestion, diarrhoea. Cardiovascular: palpitations, headaches.', options: [{s:0,t:'Absent'},{s:1,t:'Mild'},{s:2,t:'Moderate'},{s:3,t:'Severe'},{s:4,t:'Incapacitating'} ]},
+      { label: 'Somatic Symptoms (GI)', desc: 'Loss of appetite, heavy feelings in abdomen. Constipation.', options: [{s:0,t:'None'},{s:1,t:'Loss of appetite but eating without encouragement'},{s:2,t:'Difficulty eating without urging; requests laxatives'} ]},
+      { label: 'General Somatic Symptoms', desc: 'Heaviness in limbs, back or head. Backache, muscle aches. Loss of energy and fatigability.', options: [{s:0,t:'None'},{s:1,t:'Heaviness in limbs, back, or head. Fatigue'},{s:2,t:'Any clear somatic symptoms'} ]},
+      { label: 'Genital Symptoms', desc: 'Loss of libido, menstrual disturbances.', options: [{s:0,t:'Absent'},{s:1,t:'Mild'},{s:2,t:'Severe'} ]},
+      { label: 'Hypochondriasis', desc: 'Preoccupation with bodily health.', options: [{s:0,t:'Not present'},{s:1,t:'Self-absorption (bodily)'},{s:2,t:'Preoccupation with health'},{s:3,t:'Frequent complaints, requests for help'},{s:4,t:'Hypochondriacal delusions'} ]},
+      { label: 'Loss of Weight', desc: 'Rate A if measured, otherwise rate B. Rate A: actual weight loss. Rate B: by history.', options: [{s:0,t:'No weight loss'},{s:1,t:'Probable weight loss associated with present illness'},{s:2,t:'Definite weight loss'} ]},
+      { label: 'Insight', desc: 'Patient acknowledges being depressed and ill vs. denial of illness.', options: [{s:0,t:'Acknowledges being depressed and ill'},{s:1,t:'Acknowledges illness but attributes cause to bad food, overwork'},{s:2,t:'Denies being ill at all'} ]},
+    ],
+    interpret: (s) => {
+      if (s <= 7) return { label: 'Normal', note: 'Score 0–7' };
+      if (s <= 13) return { label: 'Mild depression', note: 'Score 8–13' };
+      if (s <= 18) return { label: 'Moderate depression', note: 'Score 14–18' };
+      if (s <= 22) return { label: 'Severe depression', note: 'Score 19–22' };
+      return { label: 'Very severe depression', note: 'Score ≥23' };
+    },
+    copyText: (s, max) => `HAMD-17: ${s}/${max}`
+  },
+
+  CAGE: {
+    name: 'CAGE Alcohol Questionnaire',
+    wheelName: 'CAGE Alcohol',
+    abbr: 'CAGE',
+    max: 4,
+    info: {
+      items: '4 items; each scored 0 (No) or 1 (Yes)',
+      range: '0–4',
+      interpretation: '≥2 clinically significant; sensitivity ~93% for alcohol dependence at cut-off ≥2',
+      ref: 'Ewing JA. (1984). Detecting alcoholism: The CAGE questionnaire. JAMA, 252(14), 1905–1907.'
+    },
+    items: [
+      { label: 'Cut down', desc: 'Have you ever felt you should Cut down on your drinking?', options: [{s:0,t:'No'},{s:1,t:'Yes'} ]},
+      { label: 'Annoyed', desc: 'Have people Annoyed you by criticising your drinking?', options: [{s:0,t:'No'},{s:1,t:'Yes'} ]},
+      { label: 'Guilty', desc: 'Have you ever felt bad or Guilty about your drinking?', options: [{s:0,t:'No'},{s:1,t:'Yes'} ]},
+      { label: 'Eye-opener', desc: 'Have you ever had a drink first thing in the morning to steady your nerves or get rid of a hangover (Eye-opener)?', options: [{s:0,t:'No'},{s:1,t:'Yes'} ]},
+    ],
+    interpret: (s) => {
+      if (s === 0) return { label: 'No concern', note: 'Score 0' };
+      if (s === 1) return { label: 'Low concern', note: 'Score 1 — consider further assessment' };
+      return { label: 'Clinically significant', note: 'Score ≥2 — further assessment warranted; sensitivity ~93% for dependence' };
+    },
+    copyText: (s, max) => `CAGE: ${s}/${max}`
+  },
+
+  AUDIT: {
+    name: 'Alcohol Use Disorders Identification Test',
+    wheelName: 'AUDIT Alcohol Use',
+    abbr: 'AUDIT',
+    max: 40,
+    info: {
+      items: '10 items; items 1–8 scored 0–4; items 9–10 scored 0, 2, or 4',
+      range: '0–40',
+      interpretation: '0–7 low risk; 8–15 hazardous; 16–19 harmful; ≥20 dependence likely',
+      ref: 'Saunders JB, et al. (1993). Development of the Alcohol Use Disorders Identification Test (AUDIT). Addiction, 88(6), 791–804.'
+    },
+    items: [
+      { label: 'Drinking frequency', desc: 'How often do you have a drink containing alcohol?', options: [{s:0,t:'Never'},{s:1,t:'Monthly or less'},{s:2,t:'2–4 times a month'},{s:3,t:'2–3 times a week'},{s:4,t:'4 or more times a week'} ]},
+      { label: 'Drinks per occasion', desc: 'How many standard drinks do you have on a typical drinking day?', options: [{s:0,t:'1–2'},{s:1,t:'3–4'},{s:2,t:'5–6'},{s:3,t:'7–9'},{s:4,t:'10 or more'} ]},
+      { label: 'Binge drinking', desc: 'How often do you have 6 or more drinks on one occasion?', options: [{s:0,t:'Never'},{s:1,t:'Less than monthly'},{s:2,t:'Monthly'},{s:3,t:'Weekly'},{s:4,t:'Daily or almost daily'} ]},
+      { label: 'Loss of control', desc: 'How often during the last year have you found that you were not able to stop drinking once you had started?', options: [{s:0,t:'Never'},{s:1,t:'Less than monthly'},{s:2,t:'Monthly'},{s:3,t:'Weekly'},{s:4,t:'Daily or almost daily'} ]},
+      { label: 'Failure to fulfil obligations', desc: 'How often during the last year have you failed to do what was normally expected from you because of drinking?', options: [{s:0,t:'Never'},{s:1,t:'Less than monthly'},{s:2,t:'Monthly'},{s:3,t:'Weekly'},{s:4,t:'Daily or almost daily'} ]},
+      { label: 'Morning drinking', desc: 'How often during the last year have you needed a drink in the morning to get yourself going after a heavy drinking session?', options: [{s:0,t:'Never'},{s:1,t:'Less than monthly'},{s:2,t:'Monthly'},{s:3,t:'Weekly'},{s:4,t:'Daily or almost daily'} ]},
+      { label: 'Guilt / remorse', desc: 'How often during the last year have you had a feeling of guilt or remorse after drinking?', options: [{s:0,t:'Never'},{s:1,t:'Less than monthly'},{s:2,t:'Monthly'},{s:3,t:'Weekly'},{s:4,t:'Daily or almost daily'} ]},
+      { label: 'Memory blackouts', desc: 'How often during the last year have you been unable to remember what happened the night before because you had been drinking?', options: [{s:0,t:'Never'},{s:1,t:'Less than monthly'},{s:2,t:'Monthly'},{s:3,t:'Weekly'},{s:4,t:'Daily or almost daily'} ]},
+      { label: 'Injury', desc: 'Have you or someone else been injured as a result of your drinking?', options: [{s:0,t:'No'},{s:2,t:'Yes, but not in the last year'},{s:4,t:'Yes, during the last year'} ]},
+      { label: 'Concern from others', desc: 'Has a relative, friend, doctor, or other health worker been concerned about your drinking or suggested you cut down?', options: [{s:0,t:'No'},{s:2,t:'Yes, but not in the last year'},{s:4,t:'Yes, during the last year'} ]},
+    ],
+    interpret: (s) => {
+      if (s <= 7) return { label: 'Low risk', note: 'Score 0–7' };
+      if (s <= 15) return { label: 'Hazardous drinking', note: 'Score 8–15 — brief intervention advised' };
+      if (s <= 19) return { label: 'Harmful drinking', note: 'Score 16–19 — brief counselling and monitoring' };
+      return { label: 'Possible dependence', note: 'Score ≥20 — refer for specialist assessment' };
+    },
+    copyText: (s, max) => `AUDIT: ${s}/${max}`
+  },
+
+  CSSRS: {
+    name: 'Columbia Suicide Severity Rating Scale',
+    wheelName: 'Columbia Suicide Severity',
+    abbr: 'C-SSRS',
+    max: 5,
+    info: {
+      items: '5 ideation items (ordinal severity); plus behaviour section (separate). This tool covers ideation severity only.',
+      range: '0–5 (ideation severity)',
+      interpretation: 'Any ideation ≥3 = active ideation with intent or plan; any score requires clinical judgement',
+      ref: 'Posner K, et al. (2011). The Columbia–Suicide Severity Rating Scale: Initial validity and internal consistency findings. American Journal of Psychiatry, 168(12), 1266–1277.'
+    },
+    items: [
+      { label: 'Wish to be dead', desc: 'Patient endorses thoughts about a wish to be dead or not alive anymore, or wish to fall asleep and not wake up. (Passive ideation)', options: [{s:0,t:'No'},{s:1,t:'Yes'} ], safetyItem: true},
+      { label: 'Non-specific active suicidal thoughts', desc: 'General, non-specific thoughts of wanting to end one\'s life/commit suicide (e.g., "I\'ve thought about killing myself") without thoughts of ways to kill oneself.', options: [{s:0,t:'No'},{s:1,t:'Yes'} ], safetyItem: true},
+      { label: 'Active ideation with method (no plan)', desc: 'Thoughts of suicide and has thought of at least one method. This is different from a specific plan with time and place; the patient has thought of a method to use but has not planned details.', options: [{s:0,t:'No'},{s:1,t:'Yes'} ], safetyItem: true},
+      { label: 'Active ideation with intent (no plan)', desc: 'Active suicidal thoughts of killing oneself and the patient reports having some intent to act on such thoughts, as opposed to "I have the thoughts but I will not act on them."', options: [{s:0,t:'No'},{s:1,t:'Yes'} ], safetyItem: true},
+      { label: 'Active ideation with plan and intent', desc: 'Thoughts of killing oneself with details of plan fully or partially worked out and the patient has some intent to carry it out.', options: [{s:0,t:'No'},{s:1,t:'Yes'} ], safetyItem: true},
+    ],
+    interpret: (s) => {
+      if (s === 0) return { label: 'No ideation', note: 'No suicidal ideation endorsed' };
+      if (s <= 2) return { label: 'Passive ideation', note: 'Score 1–2 — monitor; document risk factors' };
+      if (s <= 4) return { label: 'Active ideation', note: 'Score 3–4 — active ideation with method or intent; urgent assessment required' };
+      return { label: 'Active ideation with plan', note: 'Score 5 — immediate risk assessment and safety planning required' };
+    },
+    copyText: (s, max) => `C-SSRS ideation: ${s}/${max}`
+  },
+
+  CGI: {
+    name: 'Clinical Global Impression',
+    wheelName: 'Clinical Global Impression',
+    abbr: 'CGI',
+    max: 14,
+    info: {
+      items: '2 items: CGI-Severity (1–7) and CGI-Improvement (1–7). Clinician-rated global assessment.',
+      range: 'Severity: 1–7; Improvement: 1–7',
+      interpretation: 'Severity: 1=normal, 4=moderately ill, 7=extremely ill. Improvement: 1=very much improved, 4=no change, 7=very much worse.',
+      ref: 'Guy W. (1976). ECDEU Assessment Manual for Psychopharmacology. US Department of Health, Education, and Welfare. Rockville, MD.'
+    },
+    items: [
+      { label: 'CGI-Severity', desc: 'Considering your total clinical experience with this particular population, how mentally ill is the patient at this time?', options: [{s:1,t:'Normal, not at all ill'},{s:2,t:'Borderline mentally ill'},{s:3,t:'Mildly ill'},{s:4,t:'Moderately ill'},{s:5,t:'Markedly ill'},{s:6,t:'Severely ill'},{s:7,t:'Among the most extremely ill patients'} ]},
+      { label: 'CGI-Improvement', desc: 'Compared to the patient\'s condition at admission, how much has the patient changed? (Rate even if no formal baseline — best estimate)', options: [{s:1,t:'Very much improved'},{s:2,t:'Much improved'},{s:3,t:'Minimally improved'},{s:4,t:'No change'},{s:5,t:'Minimally worse'},{s:6,t:'Much worse'},{s:7,t:'Very much worse'} ]},
+    ],
+    interpret: (s) => {
+      const sev = s >= 1 ? s - 1 : null; // rough proxy — just display both raw
+      return { label: 'See item scores', note: 'CGI-S and CGI-I are interpreted individually. Copy to notes for the breakdown.' };
+    },
+    copyText: (s, max) => `CGI (S+I): ${s}`
+  },
+
+  YBOCS: {
+    name: 'Yale-Brown Obsessive Compulsive Scale',
+    wheelName: 'Yale-Brown OCD',
+    abbr: 'Y-BOCS',
+    max: 40,
+    info: {
+      items: '10 items; 5 obsession items + 5 compulsion items, each scored 0–4',
+      range: '0–40',
+      interpretation: '0–7 subclinical; 8–15 mild; 16–23 moderate; 24–31 severe; 32–40 extreme',
+      ref: 'Goodman WK, et al. (1989). The Yale-Brown Obsessive Compulsive Scale. Archives of General Psychiatry, 46(11), 1006–1011.'
+    },
+    items: [
+      { label: 'Time spent on obsessions', desc: 'How much of your time is occupied by obsessive thoughts?', options: [{s:0,t:'None'},{s:1,t:'<1 hr/day — mild'},{s:2,t:'1–3 hrs/day — moderate'},{s:3,t:'3–8 hrs/day — severe'},{s:4,t:'>8 hrs/day — extreme'} ]},
+      { label: 'Interference from obsessions', desc: 'How much do your obsessive thoughts interfere with your work, school, social or other activities?', options: [{s:0,t:'None'},{s:1,t:'Mild — slight interference'},{s:2,t:'Moderate — definite interference but manageable'},{s:3,t:'Severe — substantial impairment'},{s:4,t:'Extreme — incapacitating'} ]},
+      { label: 'Distress from obsessions', desc: 'How much distress do your obsessive thoughts cause you?', options: [{s:0,t:'None'},{s:1,t:'Mild — not too disturbing'},{s:2,t:'Moderate — disturbing but still manageable'},{s:3,t:'Severe — very disturbing'},{s:4,t:'Extreme — near constant and disabling distress'} ]},
+      { label: 'Resistance to obsessions', desc: 'How much of an effort do you make to resist the obsessive thoughts?', options: [{s:0,t:'Always resists'},{s:1,t:'Tries to resist most of the time'},{s:2,t:'Makes some effort to resist'},{s:3,t:'Yields to all obsessions without attempting resistance'},{s:4,t:'Completely and willingly yields to obsessions'} ]},
+      { label: 'Control over obsessions', desc: 'How much control do you have over your obsessive thoughts?', options: [{s:0,t:'Complete control'},{s:1,t:'Usually able to control obsessions'},{s:2,t:'Sometimes able to control — with much effort'},{s:3,t:'Rarely successful in controlling obsessions'},{s:4,t:'No control — obsessions experienced as completely involuntary'} ]},
+      { label: 'Time spent on compulsions', desc: 'How much time do you spend performing compulsive behaviours?', options: [{s:0,t:'None'},{s:1,t:'<1 hr/day — mild'},{s:2,t:'1–3 hrs/day — moderate'},{s:3,t:'3–8 hrs/day — severe'},{s:4,t:'>8 hrs/day — extreme'} ]},
+      { label: 'Interference from compulsions', desc: 'How much do your compulsive behaviours interfere with your work, school, social or other activities?', options: [{s:0,t:'None'},{s:1,t:'Mild — slight interference'},{s:2,t:'Moderate — definite interference but manageable'},{s:3,t:'Severe — substantial impairment'},{s:4,t:'Extreme — incapacitating'} ]},
+      { label: 'Distress from compulsions', desc: 'How anxious would you become if prevented from performing your compulsion(s)?', options: [{s:0,t:'None'},{s:1,t:'Mild — only slightly anxious if prevented'},{s:2,t:'Moderate — anxiety would mount but manageable'},{s:3,t:'Severe — prominent and very disturbing anxiety'},{s:4,t:'Extreme — incapacitating anxiety'} ]},
+      { label: 'Resistance to compulsions', desc: 'How much of an effort do you make to resist the compulsions?', options: [{s:0,t:'Always resists'},{s:1,t:'Tries to resist most of the time'},{s:2,t:'Makes some effort to resist'},{s:3,t:'Yields to almost all compulsions'},{s:4,t:'Completely and willingly yields to compulsions'} ]},
+      { label: 'Control over compulsions', desc: 'How strong is the drive to perform the compulsive behaviour?', options: [{s:0,t:'Complete control'},{s:1,t:'Pressure but usually able to exercise voluntary control'},{s:2,t:'Strong pressure — must struggle hard to resist'},{s:3,t:'Very strong drive — must be carried to completion'},{s:4,t:'Drive completely involuntary and overpowering'} ]},
+    ],
+    interpret: (s) => {
+      if (s <= 7) return { label: 'Subclinical', note: 'Score 0–7' };
+      if (s <= 15) return { label: 'Mild OCD', note: 'Score 8–15' };
+      if (s <= 23) return { label: 'Moderate OCD', note: 'Score 16–23' };
+      if (s <= 31) return { label: 'Severe OCD', note: 'Score 24–31' };
+      return { label: 'Extreme OCD', note: 'Score 32–40' };
+    },
+    copyText: (s, max) => `Y-BOCS: ${s}/${max}`
+  },
+
+  CIWA: {
+    name: 'Clinical Institute Withdrawal Assessment for Alcohol',
+    wheelName: 'CIWA-Ar Alcohol W/D',
+    abbr: 'CIWA-Ar',
+    max: 67,
+    info: {
+      items: '10 items; items 1–9 scored 0–7; item 10 (orientation) scored 0–4',
+      range: '0–67',
+      interpretation: '0–9 absent/minimal; 10–15 mild; 16–20 moderate; ≥21 severe withdrawal — consider medication',
+      ref: 'Sullivan JT, et al. (1989). Assessment of alcohol withdrawal: The revised Clinical Institute Withdrawal Assessment for Alcohol scale (CIWA-Ar). British Journal of Addiction, 84(11), 1353–1357.'
+    },
+    items: [
+      { label: 'Nausea / Vomiting', desc: 'Ask: Do you feel sick to your stomach? Have you vomited? Observe.', options: [{s:0,t:'No nausea and no vomiting'},{s:1,t:'Mild nausea with no dry heaves'},{s:2,t:'Mild nausea with occasional dry heaves'},{s:3,t:'Moderate nausea with occasional dry heaves'},{s:4,t:'Intermittent nausea with frequent dry heaves'},{s:5,t:'Moderate nausea with frequent dry heaves'},{s:6,t:'Severe nausea with frequent dry heaves'},{s:7,t:'Constant nausea, frequent dry heaves and vomiting'} ]},
+      { label: 'Tremor', desc: 'Arms extended and fingers spread apart. Observe.', options: [{s:0,t:'No tremor'},{s:1,t:'Not visible but can be felt fingertip to fingertip'},{s:2,t:'Mild, visible tremor at fingertips'},{s:3,t:'Moderate tremor at fingertips'},{s:4,t:'Moderate tremor with arms extended'},{s:5,t:'Marked tremor with arms extended'},{s:6,t:'Severe tremor even without extension'},{s:7,t:'Severe tremor even with arms not extended'} ]},
+      { label: 'Paroxysmal Sweats', desc: 'Observe.', options: [{s:0,t:'No sweat visible'},{s:1,t:'Barely perceptible sweating, palms moist'},{s:2,t:'Mild sweating — beads on brow'},{s:3,t:'Moderate sweating'},{s:4,t:'Beads of sweat obvious on forehead'},{s:5,t:'Profuse sweating down forehead'},{s:6,t:'Soaking wet'},{s:7,t:'Drenching sweats'} ]},
+      { label: 'Anxiety', desc: 'Ask: Do you feel nervous? Observe.', options: [{s:0,t:'No anxiety, at ease'},{s:1,t:'Mildly anxious'},{s:2,t:'Mild to moderate anxiety'},{s:3,t:'Moderate anxiety or guarded'},{s:4,t:'Moderately anxious or guarded — equivalent to moderate panic'},{s:5,t:'Moderately severe anxiety'},{s:6,t:'Severe anxiety'},{s:7,t:'Equivalent to acute panic as seen in severe delirium or acute schizophrenic reactions'} ]},
+      { label: 'Agitation', desc: 'Observe.', options: [{s:0,t:'Normal activity'},{s:1,t:'Somewhat more than normal activity'},{s:2,t:'Mildly fidgety and restless'},{s:3,t:'Moderately fidgety'},{s:4,t:'Moderately fidgety and restless'},{s:5,t:'Markedly restless'},{s:6,t:'Cannot sit still; frequent agitated movements'},{s:7,t:'Paces back and forth during most of interview or constantly thrashes about'} ]},
+      { label: 'Tactile Disturbances', desc: 'Ask: Have you any itching, pins and needles, any burning, any numbness or do you feel bugs crawling on or under your skin?', options: [{s:0,t:'None'},{s:1,t:'Very mild itching, pins and needles, burning, or numbness'},{s:2,t:'Mild itching, pins and needles, burning, or numbness'},{s:3,t:'Moderate itching, pins and needles, burning, or numbness'},{s:4,t:'Moderately severe hallucinations'},{s:5,t:'Severe hallucinations'},{s:6,t:'Extremely severe hallucinations'},{s:7,t:'Continuous hallucinations'} ]},
+      { label: 'Auditory Disturbances', desc: 'Ask: Are you more aware of sounds around you? Are they harsh? Do they frighten you? Are you hearing anything that is disturbing you? Are you hearing things you know are not there?', options: [{s:0,t:'Not present'},{s:1,t:'Very mild harshness or ability to frighten'},{s:2,t:'Mild harshness or ability to frighten'},{s:3,t:'Moderate harshness or ability to frighten'},{s:4,t:'Moderately severe hallucinations'},{s:5,t:'Severe hallucinations'},{s:6,t:'Extremely severe hallucinations'},{s:7,t:'Continuous hallucinations'} ]},
+      { label: 'Visual Disturbances', desc: 'Ask: Does the light appear too bright? Is its color different? Does it hurt your eyes? Are you seeing anything that is disturbing to you? Are you seeing things you know are not there?', options: [{s:0,t:'Not present'},{s:1,t:'Very mild sensitivity'},{s:2,t:'Mild sensitivity'},{s:3,t:'Moderate sensitivity'},{s:4,t:'Moderately severe hallucinations'},{s:5,t:'Severe hallucinations'},{s:6,t:'Extremely severe hallucinations'},{s:7,t:'Continuous hallucinations'} ]},
+      { label: 'Headache / Fullness in Head', desc: 'Ask: Does your head feel different? Does it feel like there is a band around your head? Do not rate for dizziness or lightheadedness.', options: [{s:0,t:'Not present'},{s:1,t:'Very mild'},{s:2,t:'Mild'},{s:3,t:'Moderate'},{s:4,t:'Moderately severe'},{s:5,t:'Severe'},{s:6,t:'Very severe'},{s:7,t:'Extremely severe'} ]},
+      { label: 'Orientation / Clouding of Sensorium', desc: 'Ask: What day is this? Where are you? Who am I?', options: [{s:0,t:'Oriented and can do serial additions'},{s:1,t:'Cannot do serial additions or is uncertain about date'},{s:2,t:'Date disorientation by no more than 2 calendar days'},{s:3,t:'Date disorientation by more than 2 calendar days'},{s:4,t:'Disoriented for place and/or person'} ]},
+    ],
+    interpret: (s) => {
+      if (s <= 9) return { label: 'Absent / Minimal', note: 'Score 0–9 — monitor' };
+      if (s <= 15) return { label: 'Mild withdrawal', note: 'Score 10–15 — consider PRN medication' };
+      if (s <= 20) return { label: 'Moderate withdrawal', note: 'Score 16–20 — medication indicated' };
+      return { label: 'Severe withdrawal', note: 'Score ≥21 — treat aggressively; consider ICU' };
+    },
+    copyText: (s, max) => `CIWA-Ar: ${s}/${max}`
+  },
+
+  MADRS: {
+    name: 'Montgomery-Åsberg Depression Rating Scale',
+    wheelName: 'MADRS Depression',
+    abbr: 'MADRS',
+    max: 60,
+    info: {
+      items: '10 items, each scored 0–6 with anchors at 0, 2, 4, 6',
+      range: '0–60',
+      interpretation: '0–6 normal; 7–19 mild; 20–34 moderate; ≥35 severe',
+      ref: 'Montgomery SA, Åsberg M. (1979). A new depression scale designed to be sensitive to change. British Journal of Psychiatry, 134, 382–389.'
+    },
+    items: [
+      { label: 'Apparent Sadness', desc: 'Representing despondency, gloom and despair (more than just ordinary transient low spirits), reflected in speech, facial expression, and posture. Rate by depth and inability to brighten up.', options: [{s:0,t:'No sadness'},{s:1,t:''},{s:2,t:'Looks dispirited but does brighten up without difficulty'},{s:3,t:''},{s:4,t:'Appears sad and unhappy most of the time'},{s:5,t:''},{s:6,t:'Looks miserable all the time. Extremely despondent'} ]},
+      { label: 'Reported Sadness', desc: 'Representing reports of depressed mood, regardless of whether it is reflected in appearance or not. Includes low spirits, despondency or the feeling of being beyond help and without hope.', options: [{s:0,t:'Occasional sadness in keeping with the circumstances'},{s:1,t:''},{s:2,t:'Sad or low but brightens up easily'},{s:3,t:''},{s:4,t:'Pervasive feelings of sadness or gloominess. Mood still influenced by external circumstances'},{s:5,t:''},{s:6,t:'Continuous or unvarying sadness, misery or despondency'} ]},
+      { label: 'Inner Tension', desc: 'Representing feelings of ill-defined discomfort, edginess, inner turmoil, mental tension mounting to either panic, dread or anguish. Rate according to intensity, frequency, duration and extent of reassurance needed.', options: [{s:0,t:'Placid. Only fleeting inner tension'},{s:1,t:''},{s:2,t:'Occasional feelings of edginess and ill-defined discomfort'},{s:3,t:''},{s:4,t:'Continuous feelings of inner tension or intermittent panic'},{s:5,t:''},{s:6,t:'Unrelenting dread or anguish. Overwhelming panic'} ]},
+      { label: 'Reduced Sleep', desc: 'Representing the experience of reduced duration or depth of sleep compared to the subject\'s own normal pattern when well.', options: [{s:0,t:'Sleeps as usual'},{s:1,t:''},{s:2,t:'Slight difficulty dropping off or slightly reduced, light or fitful sleep'},{s:3,t:''},{s:4,t:'Sleep reduced or broken by at least 2 hours'},{s:5,t:''},{s:6,t:'Less than 2–3 hours sleep'} ]},
+      { label: 'Reduced Appetite', desc: 'Representing the feeling of a loss of appetite compared with when well. Rate by loss of desire for food or the need to force oneself to eat.', options: [{s:0,t:'Normal or increased appetite'},{s:1,t:''},{s:2,t:'Slightly reduced appetite'},{s:3,t:''},{s:4,t:'No appetite. Food is tasteless'},{s:5,t:''},{s:6,t:'Needs persuasion to eat at all'} ]},
+      { label: 'Concentration Difficulties', desc: 'Representing difficulties in collecting one\'s thoughts mounting to incapacitating lack of concentration. Rate according to intensity, frequency, and degree of incapacity produced.', options: [{s:0,t:'No difficulties in concentrating'},{s:1,t:''},{s:2,t:'Occasional difficulties in collecting thoughts'},{s:3,t:''},{s:4,t:'Difficulties in concentrating and sustaining thought'},{s:5,t:''},{s:6,t:'Unable to read or hold a conversation without great difficulty'} ]},
+      { label: 'Lassitude', desc: 'Representing a difficulty getting started or slowness initiating and performing everyday activities.', options: [{s:0,t:'Hardly any difficulty in getting started. No sluggishness'},{s:1,t:''},{s:2,t:'Difficulties in starting activities'},{s:3,t:''},{s:4,t:'Difficulties in starting simple routine activities'},{s:5,t:''},{s:6,t:'Complete lassitude. Unable to do anything without help'} ]},
+      { label: 'Inability to Feel', desc: 'Representing the subjective experience of reduced interest in surroundings, or activities that normally give pleasure. The ability to react with adequate emotion to circumstances or people is reduced.', options: [{s:0,t:'Normal interest in surroundings and other people'},{s:1,t:''},{s:2,t:'Reduced ability to enjoy usual interests'},{s:3,t:''},{s:4,t:'Loss of interest in surroundings. Loss of feelings for friends and acquaintances'},{s:5,t:''},{s:6,t:'The experience of being emotionally paralysed, inability to feel anger, grief or pleasure'} ]},
+      { label: 'Pessimistic Thoughts', desc: 'Representing thoughts of guilt, inferiority, self-reproach, sinfulness, remorse and ruin.', options: [{s:0,t:'No pessimistic thoughts'},{s:1,t:''},{s:2,t:'Fluctuating ideas of failure, self-reproach or self-depreciation'},{s:3,t:''},{s:4,t:'Persistent self-accusation, or definite but still rational ideas of guilt or sin'},{s:5,t:''},{s:6,t:'Delusions of ruin, remorse or unredeemable sin. Self-accusations which are absurd and unshakeable'} ]},
+      { label: 'Suicidal Thoughts', desc: 'Representing the feeling that life is not worth living, that a natural death would be welcome, suicidal thoughts, and its preparations.', options: [{s:0,t:'Enjoys life or takes it as it comes'},{s:1,t:''},{s:2,t:'Weary of life. Only fleeting suicidal thoughts'},{s:3,t:''},{s:4,t:'Probably better off dead. Suicidal thoughts are common. Suicide considered as possible solution'},{s:5,t:''},{s:6,t:'Explicit plans for suicide when there is an opportunity. Active preparations for suicide'} ], safetyItem: true},
+    ],
+    interpret: (s) => {
+      if (s <= 6) return { label: 'Normal / Remission', note: 'Score 0–6' };
+      if (s <= 19) return { label: 'Mild depression', note: 'Score 7–19' };
+      if (s <= 34) return { label: 'Moderate depression', note: 'Score 20–34' };
+      return { label: 'Severe depression', note: 'Score ≥35' };
+    },
+    copyText: (s, max) => `MADRS: ${s}/${max}`
+  },
+
+  BARNES: {
+    name: 'Barnes Akathisia Rating Scale',
+    wheelName: 'Barnes Akathisia',
+    abbr: 'BARS',
+    max: 14,
+    info: {
+      items: '4 items: objective (0–3), subjective awareness (0–3), subjective distress (0–3), global (0–5)',
+      range: '0–14; global score (item 4) is the primary clinical rating',
+      interpretation: 'Global: 0=absent; 1=questionable; 2=mild; 3=moderate; 4=marked; 5=severe',
+      ref: 'Barnes TR. (1989). A rating scale for drug-induced akathisia. British Journal of Psychiatry, 154, 672–676.'
+    },
+    items: [
+      { label: 'Objective Akathisia', desc: 'Observe the patient. Look for characteristic restless movements: shifting weight while standing, marking time, rocking foot-to-foot, inability to remain seated.', options: [
+        {s:0,t:'Normal, occasional fidgety movements of the limbs'},
+        {s:1,t:'Presence of characteristic restless movements — shuffling or tramping while standing, or rocking from foot to foot while sitting, but movements present for less than half the time'},
+        {s:2,t:'Observed phenomena as above which are present for at least half the time'},
+        {s:3,t:'Patient constantly engaged in characteristic restless movements and/or is unable to remain seated for at least 5 minutes'}
+      ]},
+      { label: 'Subjective Awareness of Restlessness', desc: 'Ask: Do you feel restless or the need to move? Have you noticed an urge to keep moving or an inability to keep still?', options: [
+        {s:0,t:'Absence of inner restlessness'},
+        {s:1,t:'Non-specific sense of inner restlessness'},
+        {s:2,t:'Patient is aware of an inability to keep legs still, or a desire to move the legs, and/or complaints of inner restlessness as if the legs are drawn to move'},
+        {s:3,t:'Awareness of intense compulsion to move most of the time and/or reports strong desire to walk or pace most of the time'}
+      ]},
+      { label: 'Distress Related to Restlessness', desc: 'Ask: How distressing is this feeling of restlessness to you? Does it bother you a lot?', options: [
+        {s:0,t:'No distress'},
+        {s:1,t:'Mild distress associated with restlessness'},
+        {s:2,t:'Moderate distress associated with restlessness'},
+        {s:3,t:'Severe distress associated with restlessness'}
+      ]},
+      { label: 'Global Clinical Assessment of Akathisia', desc: 'Overall clinical impression combining objective and subjective findings.', options: [
+        {s:0,t:'Absent — no evidence of akathisia'},
+        {s:1,t:'Questionable — non-specific inner tension; no characteristic restless movements'},
+        {s:2,t:'Mild akathisia — restless movements present; patient aware of restlessness but not unduly distressed'},
+        {s:3,t:'Moderate akathisia — marked restlessness; patient reports distress and requests relief'},
+        {s:4,t:'Marked akathisia — intense restlessness associated with severe distress and inability to sit still'},
+        {s:5,t:'Severe akathisia — above findings present in the most extreme form; patient may be unable to cooperate'}
+      ]},
+    ],
+    interpret: (s) => {
+      const global = answers && answers[3] != null ? answers[3] : null;
+      if (global === 0) return { label: 'Absent', note: 'Global score 0' };
+      if (global === 1) return { label: 'Questionable akathisia', note: 'Global score 1' };
+      if (global === 2) return { label: 'Mild akathisia', note: 'Global score 2' };
+      if (global === 3) return { label: 'Moderate akathisia', note: 'Global score 3' };
+      if (global === 4) return { label: 'Marked akathisia', note: 'Global score 4' };
+      if (global === 5) return { label: 'Severe akathisia', note: 'Global score 5' };
+      return { label: 'See global score', note: 'Item 4 (global) is the primary clinical rating' };
+    },
+    copyText: (s, max) => {
+      const global = answers && answers[3] != null ? answers[3] : '?';
+      return `BARS: total ${s}/${max}, global ${global}/5`;
+    }
+  }
+};
+
+const SCALE_KEYS = Object.keys(SCALES);
+
+// ─── WHEEL ───
+let selectedIndex = 0;
+const ITEM_H = 56;
+const PADDING_ITEMS = 2;
+
+function buildWheel() {
+  const inner = document.getElementById('wheelInner');
+  const allItems = [
+    ...Array(PADDING_ITEMS).fill(null),
+    ...SCALE_KEYS,
+    ...Array(PADDING_ITEMS).fill(null)
+  ];
+  inner.innerHTML = '';
+  allItems.forEach((key) => {
+    const div = document.createElement('div');
+    div.className = 'wheel-item';
+    if (key) {
+      const s = SCALES[key];
+      div.innerHTML = `<span class="wheel-item-abbr">${s.abbr}</span><span class="wheel-item-name">${s.wheelName || s.name}</span>`;
+      div.dataset.key = key;
+    }
+    inner.appendChild(div);
+  });
+  setWheelIndex(0, false);
+}
+
+function setWheelIndex(idx, animate = true) {
+  selectedIndex = Math.max(0, Math.min(idx, SCALE_KEYS.length - 1));
+  const inner = document.getElementById('wheelInner');
+  const wrapper = document.querySelector('.wheel-wrapper');
+  const wrapperH = wrapper.offsetHeight;
+  const centreOffset = (wrapperH / 2) - (ITEM_H / 2);
+  const offset = centreOffset - (selectedIndex + PADDING_ITEMS) * ITEM_H;
+  inner.style.transition = animate ? 'transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+  inner.style.transform = `translateY(${offset}px)`;
+  inner.querySelectorAll('.wheel-item[data-key]').forEach((el, i) => {
+    el.classList.toggle('active', i === selectedIndex);
+  });
+}
+
+// Touch drag
+let dragStart = null, dragStartIndex = null, lastY = null, velocity = 0, lastTime = null;
+
+document.getElementById('wheelTrack').addEventListener('touchstart', e => {
+  e.preventDefault();
+  dragStart = e.touches[0].clientY;
+  dragStartIndex = selectedIndex;
+  lastY = dragStart; velocity = 0; lastTime = Date.now();
+}, { passive: false });
+
+document.getElementById('wheelTrack').addEventListener('touchmove', e => {
+  e.preventDefault();
+  const now = Date.now();
+  velocity = (e.touches[0].clientY - lastY) / (now - lastTime + 1);
+  lastY = e.touches[0].clientY; lastTime = now;
+  setWheelIndex(Math.round(dragStartIndex - (e.touches[0].clientY - dragStart) / ITEM_H));
+}, { passive: false });
+
+document.getElementById('wheelTrack').addEventListener('touchend', e => {
+  e.preventDefault();
+  setWheelIndex(selectedIndex + Math.round(-velocity * 3));
+}, { passive: false });
+
+// Mouse drag
+document.getElementById('wheelTrack').addEventListener('mousedown', e => {
+  dragStart = e.clientY; dragStartIndex = selectedIndex;
+  velocity = 0; lastY = e.clientY; lastTime = Date.now();
+  const onMove = ev => {
+    const now = Date.now();
+    velocity = (ev.clientY - lastY) / (now - lastTime + 1);
+    lastY = ev.clientY; lastTime = now;
+    setWheelIndex(Math.round(dragStartIndex - (ev.clientY - dragStart) / ITEM_H));
+  };
+  const onUp = () => {
+    setWheelIndex(selectedIndex + Math.round(-velocity * 3));
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  };
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+});
+
+// FIX #2: keyboard only fires on landing page
+window.addEventListener('keydown', e => {
+  const onLanding = document.getElementById('landing').style.display !== 'none';
+  if (!onLanding) return;
+  if (e.key === 'ArrowUp') setWheelIndex(selectedIndex - 1);
+  if (e.key === 'ArrowDown') setWheelIndex(selectedIndex + 1);
+  if (e.key === 'Enter') startScale();
+});
+
+// ─── SESSION HISTORY ───
+const sessionHistory = [];
+
+function pushHistory(scale, total, interp, copyStr) {
+  const now = new Date();
+  const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  sessionHistory.unshift({ abbr: scale.abbr, total, max: scale.max, label: interp.label, copyStr, time });
+  const btn = document.getElementById('historyBtn');
+  if (btn) btn.style.display = 'block';
+}
+
+function openHistory() {
+  const list = document.getElementById('historyList');
+  if (sessionHistory.length === 0) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:0.7rem;">No scores recorded yet this session.</div>';
+  } else {
+    list.innerHTML = sessionHistory.map((h, i) => `
+      <div class="history-entry">
+        <div class="history-scale">${h.abbr} ${h.total}</div>
+        <div class="history-meta">
+          <div class="history-interp">${h.label}</div>
+          <div class="history-time">${h.time}</div>
+        </div>
+        <button class="history-copy" onclick="copyHistoryEntry(${i})">copy</button>
+      </div>
+    `).join('');
+  }
+  document.getElementById('historyModal').style.display = 'flex';
+}
+
+function copyHistoryEntry(i) {
+  copyToClipboard(sessionHistory[i].copyStr);
+  showToast('Copied');
+}
+
+function closeHistory(e) {
+  if (e.target === document.getElementById('historyModal')) closeHistoryDirect();
+}
+
+function closeHistoryDirect() {
+  document.getElementById('historyModal').style.display = 'none';
+}
+
+
+let currentScale = null;
+let currentQ = 0;
+let answers = [];
+let transitioning = false;
+
+function startScale() {
+  const key = SCALE_KEYS[selectedIndex];
+  currentScale = SCALES[key];
+  currentQ = 0;
+  answers = new Array(currentScale.items.length).fill(null);
+  transitioning = false;
+
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('scale-view').style.display = 'flex';
+  document.getElementById('scaleNameHeader').textContent = currentScale.abbr;
+  document.getElementById('questionArea').innerHTML = '';
+  updateScoreDisplay();
+  renderQuestion(0, 'right');
+}
+
+// FIX #3: renamed, called after card lands not before
+function updateScoreDisplay() {
+  const total = answers.reduce((sum, v) => sum + (v ?? 0), 0);
+  document.getElementById('runningScore').textContent = total;
+  const pct = (currentQ / currentScale.items.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function renderQuestion(idx, direction = 'right') {
+  if (transitioning) return;
+  const area = document.getElementById('questionArea');
+  const item = currentScale.items[idx];
+  if (!item) return;
+
+  // FIX #11: proper disabled attribute, not opacity hack
+  const backBtn = document.getElementById('backBtn');
+  backBtn.disabled = (idx === 0);
+
+  // FIX #6: safety flag for PHQ-9 item 9
+  const safetyHtml = item.safetyItem
+    ? `<div class="safety-flag">⚠ Safety item — consider risk assessment if scored &gt;0</div>`
+    : '';
+
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.innerHTML = `
+    <div class="q-number">Item ${idx + 1} of ${currentScale.items.length}</div>
+    <div class="q-title">${item.label}</div>
+    <div class="q-description">${item.desc}</div>
+    ${safetyHtml}
+    <div class="options-list">
+      ${item.options.filter(o => o.t !== '').map(o => `
+        <button class="option-btn" onclick="selectAnswer(${o.s}, ${idx})">
+          <span class="option-score">${o.s}</span>
+          <span>${o.t}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  const existing = area.querySelector('.question-card, .results-card');
+  if (existing) {
+    transitioning = true;
+    existing.classList.add(direction === 'right' ? 'slide-out-left' : 'slide-out-right');
+    setTimeout(() => {
+      existing.remove();
+      card.classList.add(direction === 'right' ? 'slide-in-right' : 'slide-in-left');
+      area.appendChild(card);
+      transitioning = false;
+      updateScoreDisplay(); // FIX #3: update after card lands
+    }, 260);
+  } else {
+    card.classList.add(direction === 'right' ? 'slide-in-right' : 'slide-in-left');
+    area.appendChild(card);
+    updateScoreDisplay();
+  }
+}
+
+function selectAnswer(score, idx) {
+  if (transitioning) return;
+  answers[idx] = score;
+  if (navigator.vibrate) navigator.vibrate(8);
+
+  // Confirm flash on tapped button, then advance
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => {
+    if (parseInt(b.querySelector('.option-score').textContent) === score) {
+      b.classList.add('confirmed');
+    }
+    b.style.pointerEvents = 'none';
+  });
+
+  setTimeout(() => {
+    const next = idx + 1;
+
+    // BFCRS screening gate: after item 14, check subtotal of items 1–14
+    if (currentScale.abbr === 'BFCRS' && next === 14) {
+      const screeningTotal = answers.slice(0, 14).reduce((s, v) => s + (v ?? 0), 0);
+      if (screeningTotal < 2) {
+        currentQ = next;
+        showBFCRSScreeningNegative(screeningTotal);
+        return;
+      }
+    }
+
+    if (next >= currentScale.items.length) {
+      currentQ = next;
+      showResults();
+    } else {
+      currentQ = next;
+      renderQuestion(next, 'right');
+    }
+  }, 220);
+}
+
+// FIX #1: back respects transitioning; FIX #4: handles results state
+function handleBack() {
+  if (transitioning) return;
+  // If on results screen, go back to last question
+  if (currentQ >= currentScale.items.length) {
+    currentQ = currentScale.items.length - 1;
+    document.getElementById('backBtn').disabled = false;
+    renderQuestion(currentQ, 'left');
+    return;
+  }
+  if (currentQ === 0) return;
+  currentQ--;
+  renderQuestion(currentQ, 'left');
+}
+
+function showBFCRSScreeningNegative(screeningTotal) {
+  const area = document.getElementById('questionArea');
+  document.getElementById('progressFill').style.width = `${(14 / currentScale.items.length) * 100}%`;
+  document.getElementById('backBtn').disabled = false;
+
+  const card = document.createElement('div');
+  card.className = 'results-card';
+  card.innerHTML = `
+    <div class="result-scale">BFCRS — Screening</div>
+    <div class="result-score-big">${screeningTotal}</div>
+    <div class="result-max">items 1–14 subtotal</div>
+    <div class="result-interp">Subthreshold</div>
+    <div class="result-note">Score &lt;2 on items 1–14. Catatonia is unlikely — full scale not indicated per Bush et al. (1996).</div>
+    <div class="result-actions">
+      <button class="copy-btn" onclick="copyToClipboard('BFCRS screening: ${screeningTotal}/14 — subthreshold, catatonia unlikely'); showToast('Copied');">Copy for notes</button>
+      <button class="again-btn" onclick="goHome()">New scale</button>
+      <button class="redo-btn" onclick="redoScale()">Redo screening</button>
+      <button class="print-btn" onclick="printResult()">Print / Save PDF</button>
+    </div>
+    <div class="summary-section">
+      <button class="summary-toggle" onclick="toggleSummary(this)">▾ Continue full scale anyway</button>
+      <div class="summary-grid" style="border:none; margin-top:8px;">
+        <button class="again-btn" style="margin-top:0;" onclick="continueFullBFCRS()">Proceed to items 15–23</button>
+      </div>
+    </div>
+  `;
+
+  const existing = area.querySelector('.question-card, .results-card');
+  if (existing) {
+    transitioning = true;
+    existing.classList.add('slide-out-left');
+    setTimeout(() => {
+      existing.remove();
+      card.classList.add('slide-in-right');
+      area.appendChild(card);
+      transitioning = false;
+    }, 260);
+  } else {
+    card.classList.add('slide-in-right');
+    area.appendChild(card);
+  }
+
+  // Push to history as screening result
+  pushHistory(
+    { abbr: 'BFCRS (screening)' },
+    screeningTotal,
+    { label: 'Subthreshold — catatonia unlikely' },
+    `BFCRS screening: ${screeningTotal}/14 — subthreshold, catatonia unlikely`
+  );
+}
+
+function continueFullBFCRS() {
+  renderQuestion(14, 'right');
+}
+
+function showResults() {
+  const total = answers.reduce((sum, v) => sum + (v ?? 0), 0);
+  const interp = currentScale.interpret(total);
+  const area = document.getElementById('questionArea');
+
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('backBtn').disabled = false;
+
+  const item9Score = (currentScale.abbr === 'PHQ-9' && answers[8] != null) ? answers[8] : null;
+  const cssrsPositive = currentScale.abbr === 'C-SSRS' && answers.some(a => a > 0);
+  const safetyResultHtml = (item9Score !== null && item9Score > 0)
+    ? `<div class="safety-flag" style="margin-bottom:16px;">⚠ Item 9 scored ${item9Score} — safety assessment indicated</div>`
+    : cssrsPositive
+    ? `<div class="safety-flag" style="margin-bottom:16px;">⚠ Suicidal ideation endorsed — clinical risk assessment required</div>`
+    : '';
+
+  // Build summary rows
+  const summaryRows = currentScale.items.map((item, i) => {
+    const sc = answers[i] ?? 0;
+    return `<div class="summary-row">
+      <span class="summary-item-name">${i + 1}. ${item.label}</span>
+      <span class="summary-item-score ${sc === 0 ? 'zero' : ''}">${sc}</span>
+    </div>`;
+  }).join('');
+
+  const card = document.createElement('div');
+  card.className = 'results-card';
+  card.innerHTML = `
+    <div class="result-scale">${currentScale.abbr}</div>
+    <div class="result-score-big">${total}</div>
+    <div class="result-max">out of ${currentScale.max}</div>
+    <div class="result-interp">${interp.label}</div>
+    <div class="result-note">${interp.note}</div>
+    ${safetyResultHtml}
+    <div class="result-actions">
+      <button class="copy-btn" onclick="copyResult(${total})">Copy for notes</button>
+      <button class="again-btn" onclick="goHome()">New scale</button>
+      <button class="redo-btn" onclick="redoScale()">Redo this scale</button>
+      <button class="print-btn" onclick="printResult()">Print / Save PDF</button>
+    </div>
+    <div class="summary-section">
+      <button class="summary-toggle" onclick="toggleSummary(this)">▾ Show item breakdown</button>
+      <div class="summary-grid">${summaryRows}</div>
+    </div>
+  `;
+
+  const existing = area.querySelector('.question-card, .results-card');
+  if (existing) {
+    transitioning = true;
+    existing.classList.add('slide-out-left');
+    setTimeout(() => {
+      existing.remove();
+      card.classList.add('slide-in-right');
+      area.appendChild(card);
+      transitioning = false;
+    }, 260);
+  } else {
+    card.classList.add('slide-in-right');
+    area.appendChild(card);
+  }
+
+  // Push to session history
+  let copyStr = currentScale.copyText(total, currentScale.max);
+  if (currentScale.abbr === 'PHQ-9' && answers[8] > 0) copyStr += ` (item 9: ${answers[8]})`;
+  if (currentScale.abbr === 'C-SSRS') {
+    const highest = answers.lastIndexOf(1) + 1;
+    if (highest > 0) copyStr += ` (highest ideation: ${highest})`;
+  }
+  copyStr += ` — ${interp.label}`;
+  pushHistory(currentScale, total, interp, copyStr);
+}
+
+function printResult() {
+  // Ensure item breakdown is visible before printing
+  const grid = document.querySelector('.results-card .summary-grid');
+  const toggle = document.querySelector('.results-card .summary-toggle');
+  if (grid && !grid.classList.contains('open')) {
+    grid.classList.add('open');
+    if (toggle) toggle.textContent = '▴ Hide item breakdown';
+  }
+  setTimeout(() => window.print(), 80);
+}
+
+function toggleSummary(btn) {
+  const grid = btn.parentElement.querySelector('.summary-grid');
+  const isOpen = grid.classList.toggle('open');
+  btn.textContent = isOpen ? '▴ Hide item breakdown' : '▾ Show item breakdown';
+}
+
+// FIX #7: iOS Safari clipboard fallback
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); } catch(e) { /* silent */ }
+  document.body.removeChild(ta);
+}
+
+function copyResult(total) {
+  const interp = currentScale.interpret(total);
+  let copyText = `${currentScale.copyText(total, currentScale.max)}`;
+  if (currentScale.abbr === 'PHQ-9' && answers[8] != null && answers[8] > 0) {
+    copyText += ` (item 9: ${answers[8]})`;
+  }
+  if (currentScale.abbr === 'C-SSRS') {
+    const highest = answers.lastIndexOf(1) + 1;
+    if (highest > 0) copyText += ` (highest ideation level: ${highest})`;
+  }
+  copyToClipboard(`${copyText} — ${interp.label}`);
+  showToast('Copied to clipboard');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// FIX #12: redo without navigating home
+function redoScale() {
+  currentQ = 0;
+  answers = new Array(currentScale.items.length).fill(null);
+  transitioning = false;
+  document.getElementById('questionArea').innerHTML = '';
+  document.getElementById('backBtn').disabled = true;
+  updateScoreDisplay();
+  renderQuestion(0, 'right');
+}
+
+// FIX #10: replay landing animations on return
+function goHome() {
+  transitioning = false;
+  document.getElementById('scale-view').style.display = 'none';
+  const landing = document.getElementById('landing');
+  landing.style.display = 'flex';
+  // Re-trigger CSS animations by resetting them
+  ['.landing-title', '.wheel-wrapper', '.start-btn', '.nav-hint'].forEach(sel => {
+    const el = landing.querySelector(sel);
+    if (!el) return;
+    el.style.animation = 'none';
+    el.style.opacity = '0';
+    void el.offsetWidth; // force reflow
+    el.style.animation = '';
+  });
+  // Show history button if there are entries (no animation reset — just show)
+  const histBtn = document.getElementById('historyBtn');
+  if (histBtn && sessionHistory.length > 0) histBtn.style.display = 'block';
+  document.getElementById('questionArea').innerHTML = '';
+}
+
+function openInfo() {
+  const s = currentScale;
+  if (!s || !s.info) return;
+  document.getElementById('modalTitle').textContent = s.abbr;
+  document.getElementById('modalSubtitle').textContent = s.name;
+  document.getElementById('modalItems').textContent = s.info.items;
+  document.getElementById('modalRange').textContent = s.info.range + ' — ' + s.info.interpretation;
+  document.getElementById('modalRef').textContent = s.info.ref;
+  document.getElementById('infoModal').style.display = 'flex';
+}
+
+function closeInfo(e) {
+  if (e.target === document.getElementById('infoModal')) closeInfoDirect();
+}
+
+function closeInfoDirect() {
+  document.getElementById('infoModal').style.display = 'none';
+}
+
+// Init
+buildWheel();
+
+// ── iOS WKWebView scroll lock ──
+// Must use capture:true so this fires BEFORE the browser's native scroll handler.
+// passive:false allows preventDefault() to actually cancel the scroll.
+function iosScrollLock(e) {
+  let el = e.target;
+  while (el && el !== document.body) {
+    if (el.classList && (
+      el.classList.contains('question-card') ||
+      el.classList.contains('results-card') ||
+      el.classList.contains('modal-box')
+    )) return; // allow scroll inside these
+    el = el.parentElement;
+  }
+  e.preventDefault();
+}
+
+document.addEventListener('touchmove', iosScrollLock, { passive: false, capture: true });
+document.documentElement.addEventListener('touchmove', iosScrollLock, { passive: false, capture: true });
+</script>
+
+
+</body></html>
